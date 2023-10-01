@@ -1,0 +1,119 @@
+body, h1, h2, h3, ul, p, form, button {
+    margin: 0;
+    padding: 0;
+}
+
+/* Set a background color and font for the entire app */
+body {
+    background-color: #f0f0f0;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+/* Style the header section */
+header {
+    background-color: #007bff;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+h2 {
+    font-size: 24px;
+}
+
+/* Style the main content */
+main {
+    padding: 20px;
+}
+
+/* Style the budget input form */
+form {
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 10px;
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+button {
+    background-color: #3e6335;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #023020;
+}
+
+
+/* Additional CSS for the Send button hover effect */
+#send-button:hover {
+    background-color: #023020;
+}
+
+/* Style for the home button container */
+.button-container {
+    position: absolute;
+    top: 10px; 
+    right: 10px; 
+}
+
+/* Style for the home button */
+.home-button {
+    background-color: #3e6335;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.home-button:hover {
+    background-color: #023020;
+}
+
+.home-icon {
+    margin-right: 5px;
+}
+
+.chat-enclosure {
+    background-color: #688061;
+    border: 1px solid #ccc; 
+    padding: 20px; 
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+}
+
+/* Add vertical spacing between sections */
+.section-spacing {
+    margin-bottom: 20px; 
+}
+
+/* Center-align the label within the input box */
+.centered-label {
+    text-align: center;
+}

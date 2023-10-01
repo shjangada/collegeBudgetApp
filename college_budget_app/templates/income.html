@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Income Page</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<div class="button-container">
+    <a href="/" class="home-button">
+        <span class="home-icon"></span> Home
+    </a>
+</div>
+
+<body>
+    <div class="container">
+        <h1 class="md-display-1 text-center">Income Page</h1>
+
+        <!-- Display the remaining budget -->
+        <div id="total-income" class="text-center">
+            Total Income: ${{ total_income }}
+        </div>
+
+        <form method="POST">
+            <div class="text-center">
+                <label for="income-date">Income Date:</label>
+                <input type="date" id="income-date" name="income-date" required>
+            </div>
+
+            <div class="text-center">
+                <label for="income-source">Income Source:</label>
+                <input type="text" id="income-source" name="income-source" required>                
+            </div>
+
+            <div class="text-center">
+                <label for="income-amount">Income Amount:</label>
+                <input type="number" id="income-amount" name="income-amount" required>
+            </div>
+
+            <div class="text-center">
+                <button type="submit">Add Income</button>
+            </div>
+        </form>
+
+        <div class="text-center">
+            <table>
+                <thead style="text-align: center;">
+                    <tr>
+                        <th>Date</th>
+                        <th>Source</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in income_log %}
+                        <tr>
+                            <td>{{ entry.date }}</td>
+                            <td>{{ entry.source }}</td>
+                            <td>${{ entry.amount }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

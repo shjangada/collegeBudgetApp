@@ -1,0 +1,94 @@
+<!-- restaurants.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>College Budget App - Restaurants</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Your existing CSS styles here */
+
+        /* New CSS for styling */
+        .cuisine-form {
+            margin-bottom: 20px;
+        }
+        .restaurant-suggestions {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            display: none; /* Hide by default */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <!-- Header content here -->
+    </header>
+    <main>
+        <!-- Cuisine input form -->
+        <form class="cuisine-form" action="/restaurants" method="POST">
+            <h3>Input Your Favorite Cuisines</h3>
+            <label for="cuisine1">Cuisine 1:</label>
+            <input type="text" id="cuisine1" name="cuisine1" required>
+            <label for="cuisine2">Cuisine 2:</label>
+            <input type="text" id="cuisine2" name="cuisine2" required>
+            <label for="cuisine3">Cuisine 3:</label>
+            <input type="text" id="cuisine3" name="cuisine3" required>
+            <!-- Optional restaurant budget input -->
+            <label for="restaurantBudget">Restaurant Budget (optional):</label>
+            <input type="number" id="restaurantBudget" name="restaurantBudget">
+            <button type="submit" class="btn" id="generateButton">Generate Recommendations</button>
+        </form>
+
+        <!-- Display restaurant suggestions here -->
+        <div class="restaurant-suggestions">
+            <h3>Restaurant Suggestions</h3>
+            <!-- Recommendations content based on budget -->
+            {% if restaurant_recommendations %}
+                <p>Based on your budget, here are some restaurant recommendations:</p>
+                <ul>
+                    {% for recommendation in restaurant_recommendations %}
+                        <li>{{ recommendation }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No restaurant recommendations available.</p>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- JavaScript code to set the budget value -->
+<!-- JavaScript code to set the budget value and submit the form via AJAX -->
+<script>
+    document.getElementById('generateButton').addEventListener('click', function (e) {
+        e.preventDefault(); // Prevent the default form submission
+
+        // Get the budget value from the optional input field
+        const restaurantBudgetValue = parseFloat(document.getElementById('restaurantBudget').value);
+
+        // Update the hidden input field value with the restaurant budget
+        document.getElementById('budgetInput').value = restaurantBudgetValue;
+
+        // Create a new FormData object with the form data
+        const formData = new FormData(document.querySelector('.cuisine-form'));
+
+        // Send an AJAX request to submit the form data
+        fetch('/restaurants', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json()) // Assuming the server returns JSON
+        .then(data => {
+            // Handle the response data here
+            // You can update the restaurant suggestions div with the recommendations
+            const restaurantSuggestions = document.querySelector('.restaurant-suggestions');
+            restaurantSuggestions.innerHTML = data.suggestions;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+</script>
+
+</body>
+</html>

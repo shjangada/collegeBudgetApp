@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Budget Suggestions</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3e6335;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .back-button:hover {
+            background-color: #023020;
+        }
+
+        .response-box {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Budget Suggestions</h1>
+        
+        <!-- Back button to return to tracking expenses -->
+        <a href="/expenses" class="back-button">
+            Back to Tracking Expenses
+        </a>
+
+        <!-- Display AI responses here -->
+        <div class="response-box">
+            <h3>Your Input:</h3>
+            <p>{{ user_input }}</p>
+        </div>
+
+        <div class="response-box">
+            <h3>Budget Suggestions:</h3>
+            <p>{{ suggestions }}</p>
+        </div>
+    </div>
+</body>
+</html>

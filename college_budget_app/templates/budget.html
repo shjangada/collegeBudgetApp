@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>College Budget App - Budget Input</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <h1>College Budget App</h1>
+        <h2>Input Your Monthly Budget</h2>
+    </header>
+    <main>
+        <form action="/suggestions" method="POST">
+            <label for="budget">Total Budget per Month ($):</label>
+            <input type="number" id="budget" name="budget" required>
+    
+            <!-- Add fields for favorite cuisines -->
+            <label for="cuisine1">Favorite Cuisine 1:</label>
+            <input type="text" id="cuisine1" name="cuisine1" required>
+    
+            <label for="cuisine2">Favorite Cuisine 2:</label>
+            <input type="text" id="cuisine2" name="cuisine2" required>
+    
+            <label for="cuisine3">Favorite Cuisine 3:</label>
+            <input type="text" id="cuisine3" name="cuisine3" required>
+    
+            <button type="submit">Generate Suggestions</button>
+        </form>
+        <!-- Display the suggestion here -->
+        <div class="suggestion">
+            <h2>Budget Suggestion</h2>
+            <p>{{ suggestions }}</p>
+        </div>
+        
+        <div class="restaurant-suggestions">
+            <h2>Restaurant Suggestions</h2>
+            <p>Based on your budget and favorite cuisines:</p>
+            <p>{{ suggestions }}</p>
+        
+        </div>    
+        <!-- Add a canvas for the pie chart -->
+        <canvas id="budgetPieChart"></canvas>
+        
+        <script>
+            // Get the budget data from the Flask template
+            var budgetData = {{ budget_data }};  // You need to pass this variable from Flask
+
+            // Create the pie chart
+            var ctx = document.getElementById("budgetPieChart").getContext("2d");
+            var myPieChart = new Chart(ctx, {
+                type: "pie",
+                data: {
+                    labels: ["Food", "Housing", "Transportation", "Entertainment", "Savings", "Other"],
+                    datasets: [{
+                        data: budgetData,
+                        backgroundColor: ["#FF5733", "#FFC300", "#DAF7A6", "#5DADE2", "#FF5733", "#D5DBDB"],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                }
+            });
+        </script>
+
+    </main>
+</body>
+</html>

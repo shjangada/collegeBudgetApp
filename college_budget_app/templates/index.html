@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>College Budget App - Home</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/openai-chatbox@1.0.0/dist/openai-chatbox.min.js"></script>
+    <style>
+        .container {
+            text-align: center;
+        }
+
+        body {
+            background-color: #CCe6c1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Welcome to the College Budget App</h1>
+
+        <form method="POST">
+            <label for="initial-budget" class="centered-label">Enter Initial Budget:</label>
+            <input type="number" id="initial-budget" name="initial-budget" required>
+            <button type="button" id="save-budget-button" onclick="saveBudget()">Save Budget</button>
+        </form>
+        
+        <div class="spacer section-spacing"></div>
+
+        <div class="btn-container">
+            <a href="/budget-generator?budget={{ budget }}" class="home-button">Generate Budget Suggestions</a>
+            <a href="/expenses" class="home-button">Track Expenses</a>
+            <a href="/income" class="home-button">Update Income</a>
+        </div>
+
+        <div class="spacer section-spacing"></div>
+
+        <div class="container">
+            <div class="chat-enclosure">
+                <h2>Chat with Our AI Financial Advisor</h2>
+                <div class="chat-container">
+                    <div class="chat-box" id="chat-box"></div>
+                    <div class="input-container">
+                        <input type="text" id="user-input" placeholder="Ask a question...">
+                        <button type="button" id="send-button" onclick="sendMessage()">Send</button>
+                        <button type="button" id="clear-button" onclick="clearChat()">Clear Chat</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function saveBudget() {
+            const initialBudget = document.getElementById('initial-budget').value;
+            const formData = new FormData();
+            formData.append('initial-budget', initialBudget);
+            fetch('/', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json())
+            .then(data => {
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        }
+        
+        function sendMessage() {
+            const userInput = document.getElementById('user-input').value;
+            const chatBox = document.getElementById('chat-box');
+            fetch('/get-chat-response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `user-input=${userInput}`
+            }).then(response => response.json())
+            .then(data => {
+                chatBox.innerHTML += `You: ${userInput}<br>AI advisor: ${data.chat_response}<br>`;
+                document.getElementById('user-input').value = '';
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+
+    </script>
+</body>
+
+</html>

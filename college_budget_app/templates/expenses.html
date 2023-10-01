@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expenses Page</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .home-button {
+            background-color: #3e6335;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .home-button:hover {
+            background-color: #023020;
+        }
+        .home-icon {
+            margin-right: 5px;
+        }
+        .log-table-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+        }
+        
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        .red-row {
+            color: red;
+        }
+    </style>
+    
+    <div class="button-container">
+        <a href="/" class="home-button">
+            <span class="home-icon"></span> Home
+        </a>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Expenses Page</h1>
+
+    <!-- Display the remaining budget -->
+    <div id="total-budget" class="text-center">
+        Total Budget: ${{ initial_budget }}
+    </div>
+
+        <form method="POST">
+            <label for="expense-date">Enter Expense Date:</label>
+            <input type="date" id="expense-date" name="expense-date" required>
+        
+            <label for="expense-reason">Enter Expense Reason:</label>
+            <input type="text" id="expense-reason" name="expense-reason" required>
+        
+            <label for="expense-amount">Enter Expense Amount:</label>
+            <input type="number" id="expense-amount" name="expense-amount" required>
+            <button type="button" onclick="addExpense()">Add Expense</button>
+        </form>
+        
+        <form method="POST">
+            <button type="submit" formaction="/expenses/clear">Clear Log</button>
+        </form>
+
+        <!-- Expense log table -->
+        <div class="log-table-container">
+            <table>
+                <thead style="text-align: center;">
+                    <tr>
+                        <th>Date</th>
+                        <th>Reason</th>
+                        <th>Expense</th>
+                    </tr>
+                </thead>
+                <tbody id="expense-table-body">
+                    {% for entry in expense_log %}
+                        <tr {% if entry.amount > initial_budget %}class="red-row"{% endif %}>
+                            <td>{{ entry.date }}</td>
+                            <td>{{ entry.reason }}</td>
+                            <td>${{ entry['amount'] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Chart container -->
+        <div class="chart-container">
+            <canvas id="budget-line-chart" width="700" height="200"></canvas>
+        </div>
+    </div>
+
+    <!-- JavaScript code for updating the chart -->
+    <script>
+        var ctx = document.getElementById('budget-line-chart').getContext('2d');
+        var budgetChart;
+        var totalBudgetElement = document.getElementById('total-budget');
+
+        var initialBudget = parseFloat({{ initial_budget|tojson|safe }});
+        var expenses = {{ expense_log|tojson|safe }};  // Get the expense log data from the server
+        var labels = [0]; //first x value is 0
+        var data = [initialBudget];  // first y-value is initial budget
+        var tooltips = [];
+        
+        expenses.forEach(function (expense, index) {
+            labels.push(index + 1); 
+            data.push(expense.remainingBudget);  // plot remaining budget as then next data point
+            tooltips.push(`Date: ${expense.date}, Reason: ${expense.reason}`);
+        });
+
+        function updateChart() {
+            if (budgetChart) {
+                budgetChart.destroy(); 
+            }
+
+            budgetChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Budget',
+                            data: data, 
+                            borderColor: 'rgba(255, 0, 0, 1)',
+                            borderWidth: 2,
+                            fill: false,
+                            pointStyle: 'circle',
+                            pointRadius: 5,
+                            pointHoverRadius: 8,
+                        },
+                    ],
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,  // y-axis starts at 0
+                            max: initialBudget, // y-axis maximum value is initial budget
+                        },
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    var index = context.dataIndex;
+                                    return tooltips[index];
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+        }
+
+        // Initialize the chart
+        updateChart();
+
+        // Function to add a new expense
+        function addExpense() {
+            var expenseAmount = parseFloat(document.getElementById('expense-amount').value);
+            var newExpenseDate = document.getElementById('expense-date').value;
+            var newExpenseReason = document.getElementById('expense-reason').value;
+            
+            // Calculate the remaining budget after adding the new expense
+            var remainingBudget = data.length === 0
+                ? initialBudget - expenseAmount
+                : data[data.length - 1] - expenseAmount;
+
+            labels.push(labels.length);
+            data.push(remainingBudget);
+            tooltips.push(`Date: ${newExpenseDate}, Reason: ${newExpenseReason}`);
+            
+            budgetChart.update();
+            totalBudgetElement.textContent = `Total Budget: $${remainingBudget.toFixed(2)}`;
+            var expenseTableBody = document.getElementById('expense-table-body');
+            var newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${newExpenseDate}</td>
+                <td>${newExpenseReason}</td>
+                <td>$${expenseAmount.toFixed(2)}</td>
+            `;
+            expenseTableBody.appendChild(newRow);
+
+            document.getElementById('expense-date').value = '';
+            document.getElementById('expense-reason').value = '';
+            document.getElementById('expense-amount').value = '';
+        }
+    </script>
+
+        <form method="POST" action="/expenses/get-suggestions">
+            <!-- User input for budget suggestions -->
+            <input type="text" id="user-input" name="user-input" placeholder="Enter your expenses..." required>
+            <button type="submit">Get Budget Suggestions</button>
+        </form>
+
+        <div class="suggestions-box">
+            <p id="budget-suggestions-user-input"></p>
+            <p id="budget-suggestions-suggestions"></p>
+        </div>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/expenses/get-suggestions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 'expense_log': expenses }),
+            .then(response => response.json())
+            .then(data => {
+                var suggestionsElement = document.getElementById('budget-suggestions-suggestions');
+                suggestionsElement.textContent = "Budget Suggestions: " + data.suggestions;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        function getBudgetSuggestions() {
+            var user_input = document.getElementById('user-input').value;
+                fetch('/expenses/get-suggestions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'user-input=' + encodeURIComponent(user_input),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update the HTML elements with the received suggestions
+                var suggestionsElement = document.getElementById('budget-suggestions-suggestions');
+                suggestionsElement.textContent = "Budget Suggestions: " + data.suggestions;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+    
+
+    </script>
+
+
+
+</body>
+</html>

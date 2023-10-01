@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Budget Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+  
+   <div class="button-container">
+        <a href="/" class="home-button">
+            <span class="home-icon"></span> Home
+        </a>
+    </div>
+
+</head>
+<body>
+    <h1>Budget Generator</h1>
+    <h2>Budget Details</h2>
+    <p>Total Budget per Month: ${{ budget }}</p>
+    <!-- Budget divisions -->
+    <div class="budget-divisions">
+        {% for category, percentage in budget_data.items() %}
+        <div class="budget-item">
+            <p>{{ category }} Budget</p>
+            <p>${{ (percentage / 100) * budget }}</p>
+            <p>{{ percentage }}%</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pie chart -->
+    <div class="pie-chart-container">
+        <canvas id="budgetPieChart"></canvas>
+    </div>
+
+    <script>
+        var budgetData = {{ budget_data | tojson }};
+
+        var ctx = document.getElementById("budgetPieChart").getContext("2d");
+        var myPieChart = new Chart(ctx, {
+            type: "pie",
+            data: {
+                labels: Object.keys(budgetData),
+                datasets: [{
+                    data: Object.values(budgetData),
+                    backgroundColor: ["#FF5733", "#FFC300", "#DAF7A6", "#5DADE2", "#FF5733", "#D5DBDB"],
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+            }
+        });
+    </script>
+
+
+    <style>
+        .budget-divisions {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px;
+        }
+
+        .budget-item {
+            text-align: center;
+        }
+
+        .pie-chart-container {
+            max-width: 70%;
+            margin: 20px auto;
+        }
+
+        .extra-info {
+            margin-top: 20px;
+        }
+
+        #extra-info {
+            width: 100%;
+            padding: 10px;
+        }
+    </style>
+</body>
+</html>
