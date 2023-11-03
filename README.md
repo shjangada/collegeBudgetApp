@@ -1,7 +1,5 @@
 # collegeBudgetApp
-Application for ai@uiuc -- a college budget app that tracks expenses, income, and budget while providing AI suggestions.
-
-I created this app because after coming to college, most of my conversations with new people are about our spending and budgets. An app like this would make it easier for people to keep track of and get suggestions on how much they are spending. 
+A college budget app that tracks expenses, income, and budget while providing AI suggestions.
 
 OpenAI is used in two ways: on the home page, in the form of an AI Financial Advisor. Similar to a live chat button found on other websites, this allows users to input any questions or concerns they may have and have a conversation with Chat GPT. Second, OpenAI is used in expenses.html, where users can ask for suggestions or advice using data from their recent expenses.
 
